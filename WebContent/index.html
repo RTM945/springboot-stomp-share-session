@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>test</title>
+<script type="text/javascript" src="jquery.min.js"></script>
+<script type="text/javascript" src="sockjs.min.js"></script>
+<script type="text/javascript" src="stomp.min.js"></script>
+</head>
+<body>
+	<input type="button" value="login" onclick="login()">
+	<input type="button" id="connectBtn" value="connect" onclick="connect()" disabled>
+	<input type="button" id="getWebsocketInfoBtn" value="get websocket info" onclick="getWebsocketInfo()" disabled>
+	<br />
+	<div id="recv"></div>
+
+	<script type="text/javascript">
+		let connected = false;
+
+		function login() {
+			$.post('/login', '', function(result) {
+				$('#recv').append("<span>已登录</span><br />");
+				$('#connectBtn').removeAttr('disabled');
+			});
+		}
+
+		function connect() {
+			if(connected) {
+				return;
+			}
+			let socket = new SockJS('/ws');
+			let stompClient = Stomp.over(socket);
+			stompClient.connect({}, function(frame) {
+				connected = true;
+				$('#getWebsocketInfoBtn').removeAttr('disabled');
+				stompClient.subscribe('/topic/answer', function(resp) {
+					let data = resp.data;
+					$('#recv').append("<span>" + data + "</span><br />");
+				});
+			});
+		}
+		
+		function getWebsocketInfo() {
+			$.post('/wssession', '', function(result) {
+				$('#recv').append("<span>" + result + "</span><br />");
+			});
+		}
+	</script>
+</body>
+</html>
