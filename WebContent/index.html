@@ -19,7 +19,7 @@
 
 		function login() {
 			$.post('/login', '', function(result) {
-				$('#recv').append("<span>已登录</span><br />");
+				$('#recv').append("<span>login!</span><br />");
 				$('#connectBtn').removeAttr('disabled');
 			});
 		}
